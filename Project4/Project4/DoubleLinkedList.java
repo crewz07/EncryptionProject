@@ -1,7 +1,5 @@
 package Project4;
 
-import Chess.Pawn;
-
 import javax.xml.soap.Node;
 
 public class DoubleLinkedList<E>  {
@@ -41,7 +39,7 @@ public class DoubleLinkedList<E>  {
 
 		if (isEmpty()){
 
-			top = new NodeD<>(data, null, null);
+			top = new NodeD<>(data,null, null);
 		}
 
 		else {
@@ -95,6 +93,7 @@ public class DoubleLinkedList<E>  {
 
 			cursor = top;
 
+
 			// getting to the nexted spot
 			for (int i = 0; i < index; i++){
 				cursor = cursor.getNext();
@@ -116,6 +115,31 @@ public class DoubleLinkedList<E>  {
 //			current = current.getNext();
 //			index++;
 //		}
+	}
+
+	public DoubleLinkedList getClip(int start,int stop){
+		DoubleLinkedList<NodeD> copied = new DoubleLinkedList<>();
+		int j = 2;
+		//iterate over distance of start and stop
+		NodeD startNode = new NodeD(findNodeD(start,this).getData(),
+				findNodeD(start,this).getNext(),
+				null);
+
+		//if start and stop are the same, one node
+		if(start == stop){
+			copied.top = startNode;
+		}
+		else {
+			copied.top = startNode;
+			copied.cursor = copied.top.getNext();
+			for (int i = start + 1; i < stop; i++,j++) {
+				copied.cursor = copied.cursor.getNext();
+			}
+		}
+
+		//make the last node hold the reference for null
+		copied.findNodeD(j-1,copied).setNext(null);
+		return copied;
 	}
 
 	public NodeD removeFirst(){
@@ -289,6 +313,18 @@ public class DoubleLinkedList<E>  {
 		}
 
 		return total;
+	}
+
+	private NodeD findNodeD(int index,DoubleLinkedList list){
+
+		NodeD data = list.top;
+
+		for (int i = 0; i < index; i++){
+
+			data = data.getNext();
+		}
+
+		return data;
 	}
 
 }

@@ -121,6 +121,9 @@ public class Mix {
 
 	private void copy(int start, int stop, int clipNum) {
 		error(start,stop);
+		clipboard.add(message.getClip(start,stop).top,clipNum);
+		undoCommands = undoCommands + "c " + start + " " +
+				clipNum + "\n";
 	}
 
 	private void paste(int index, int clipNum) {
