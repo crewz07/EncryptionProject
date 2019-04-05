@@ -105,30 +105,58 @@ public class Mix {
 			message.removeIndex(start);
 		}
 
-		undoCommands = undoCommands + "b " + removeStr + " " + start + "\n";
+		undoCommands = undoCommands + "b " + removeStr + " " + start +
+				"\n";
 	}
 
 	private void cut(int start, int stop, int clipNum) {
 
 		// Error Checks
 		error(start,stop);
-		rangeError(clipNum, clipboard.size());
 
-		clipboard.add(message.removeClip(start, stop),clipNum);
+		if (clipboard.indexExist(clipNum)){
+
+			throw new IllegalArgumentException("Clipboard Number " +
+					"exist");
+		}
+
+		clipboard.addLast(message.removeClip(start, stop), clipNum);
 		undoCommands = undoCommands + "p " + start + " " +
 				clipNum + "\n";
 	}
 
 	private void copy(int start, int stop, int clipNum) {
+
 		error(start,stop);
-		clipboard.add(message.getClip(start,stop).top,clipNum);
-		undoCommands = undoCommands + "c " + start + " " +
-				clipNum + "\n";
+		if (clipboard.indexExist(clipNum)){
+
+			throw new IllegalArgumentException("Clipboard Number " +
+					"exist");
+		}
+
+		DoubleLinkedList temp = message.getClip(start, stop);
+		clipboard.addLast(temp.top,clipNum);
 	}
 
 	private void paste(int index, int clipNum) {
 
+		int length = message.size();
 
+	    // Number does not exist
+        if (!clipboard.indexExist(clipNum)){
+
+            throw new IllegalArgumentException("Clipboard Number " +
+                    "exist");
+        }
+
+        // Find the top NodeD of the clipboard
+        NodeD input = clipboard.removeIndex(clipNum).getTopOfClipBoard();
+        message.addClip(index, input);
+
+
+        length = message.size() - length;
+        undoCommands = undoCommands + "r " + index + " " +
+				(length + index - 1) + "\n";
 	}
          
 	private void insertbefore(String token, int index) {
@@ -178,6 +206,13 @@ public class Mix {
 		System.out.println("\th\tmeans to show this help page");
 	}
 
+    /*******************************************************************
+     * This method determines if the an error can come from start or
+     * stop or both.
+     *
+     * @param start The starting index.
+     * @param stop The stopping index.
+     ******************************************************************/
 	private void error(int start, int stop){
 
 		int maxlength = message.toString().length();
@@ -193,21 +228,6 @@ public class Mix {
 
 			throw new IndexOutOfBoundsException("Stop index is " +
 					"incorrect");
-		}
-	}
-
-	private void rangeError(int index, int size){
-
-		if (index != 0 && size == 0){
-
-			throw new IndexOutOfBoundsException("Out of " +
-					"range.");
-		}
-
-		if (index < 0 || index > size){
-
-			throw new IndexOutOfBoundsException("Out of " +
-					"bounds.");
 		}
 	}
 }
