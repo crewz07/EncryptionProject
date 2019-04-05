@@ -1,7 +1,5 @@
 package Project4;
 
-import javax.xml.soap.Node;
-
 public class DoubleLinkedList<E>  {
 	protected NodeD<E> top;      // The first NodeD<E> in the list
 
@@ -33,13 +31,11 @@ public class DoubleLinkedList<E>  {
 		return retVal;
 	}
 
-	// Create the rest of the needed methods.
-
 	public void addFirst(E data){
 
 		if (isEmpty()){
 
-			top = new NodeD<>(data,null, null);
+			top = new NodeD<>(data, null, null);
 		}
 
 		else {
@@ -93,7 +89,6 @@ public class DoubleLinkedList<E>  {
 
 			cursor = top;
 
-
 			// getting to the nexted spot
 			for (int i = 0; i < index; i++){
 				cursor = cursor.getNext();
@@ -107,38 +102,88 @@ public class DoubleLinkedList<E>  {
 		}
 	}
 
-	public void addClip(int index, NodeD firstNode,
-						NodeD lastNode){
+	public void addClip(int index, NodeD firstNode){
 
-//
-//		while (index != start){
-//			current = current.getNext();
-//			index++;
-//		}
+		// Last node in the clipboard
+	    NodeD last = firstNode;
+
+	    NodeD prev;
+	    NodeD firstList = top;
+		NodeD lastList = top;
+	    int i = 0;
+
+		// Checking if index is correct
+		if (index < 0 || index > size()){
+
+			throw new IndexOutOfBoundsException("Index " +
+					"is out of Range.");
+		}
+
+		// Getting to last element in the the clipboard
+		// link list
+		while(last.getNext() != null){
+
+		    last = last.getNext();
+        }
+
+        // Finding the Node at the index
+        while(index != i){
+
+        	firstList = firstList.getNext();
+        	i++;
+		}
+
+		prev = firstList.getPrev();
+
+        // Getting to the last element in the current
+		// Double link list
+        while(lastList.getNext() != null){
+
+        	lastList = lastList.getNext();
+		}
+
+        // Adding at first index
+		if (index == 0) {
+
+		    top.setPrev(last);
+		    last.setNext(top);
+            top = firstNode;
+        }
+
+        // Node is added to the last slot
+        else if (index == size() - 1){
+
+        	lastList.setNext(firstNode);
+        	firstNode.setPrev(lastList);
+		}
+
+		// Adding in the middle
+		else {
+
+			prev.setNext(firstNode);
+			firstNode.setPrev(prev);
+			firstList.setPrev(last);
+			last.setNext(firstList);
+		}
 	}
 
 	public DoubleLinkedList getClip(int start,int stop){
-		DoubleLinkedList<NodeD> copied = new DoubleLinkedList<>();
-		int j = 2;
-		//iterate over distance of start and stop
-		NodeD startNode = new NodeD(findNodeD(start,this).getData(),
-				findNodeD(start,this).getNext(),
-				null);
 
-		//if start and stop are the same, one node
-		if(start == stop){
-			copied.top = startNode;
-		}
-		else {
-			copied.top = startNode;
-			copied.cursor = copied.top.getNext();
-			for (int i = start + 1; i < stop; i++,j++) {
-				copied.cursor = copied.cursor.getNext();
-			}
+		DoubleLinkedList<Character> copied = new DoubleLinkedList<>();
+
+		//iterate over distance of start and stop
+		String thisNodeStr = this.toString();
+		Character startNode;
+
+		for (int i = start; i <= stop; i++){
+
+			startNode = thisNodeStr.charAt(i);
+			copied.addLast(startNode);
 		}
 
 		//make the last node hold the reference for null
-		copied.findNodeD(j-1,copied).setNext(null);
+//		copied.findNodeD(j-1,copied).setNext(null);
+
 		return copied;
 	}
 
@@ -197,7 +242,7 @@ public class DoubleLinkedList<E>  {
                     "list");
         }
 
-        else if (index < 0 || index > size()){
+        else if (index < 0 || index > size() - 1){
 
             throw new IndexOutOfBoundsException("Index is" +
                     "not within range");
@@ -240,7 +285,7 @@ public class DoubleLinkedList<E>  {
 
 	public NodeD removeClip(int start, int stop){
 
-		NodeD removeStart = top;
+		NodeD removeStart;
 		NodeD current = top;
 		int index = 0;
 
@@ -250,12 +295,12 @@ public class DoubleLinkedList<E>  {
 			throw new IndexOutOfBoundsException();
 		}
 
-		else if (start > stop || start < 0 || start > size() -1){
+		else if (start > stop || start < 0 || start > size()){
 
 			throw new IndexOutOfBoundsException();
 		}
 
-		else if (stop < 0 || stop > size() - 1){
+		else if (stop < 0 || stop > size()){
 
 			throw new IndexOutOfBoundsException();
 		}
@@ -273,20 +318,45 @@ public class DoubleLinkedList<E>  {
 			index++;
 		}
 
-		// current is at the last spot
-		if (removeStart.getPrev() != null){
+		// Start is the first index
+		if (removeStart.getPrev() == null){
+
+			// In event the entire list was removed
+			if (current.getNext() != null){
+
+				current.getNext().setPrev(null);
+				top = current.getNext();
+				current.setNext(null);
+			}
+		}
+
+		// Stop is the last index
+		else if (current.getNext() == null){
+
+			// In event the entire list was removed
+			if (removeStart.getPrev() != null) {
+
+				removeStart.getPrev().setNext(null);
+				removeStart.setPrev(null);
+			}
+		}
+
+		// Index are right next to each other and in middle
+		else if (current.getPrev() == removeStart){
 
 			removeStart.getPrev().setNext(current.getNext());
+			current.getNext().setPrev(removeStart.getPrev());
 		}
 
-		else {
-			top = current;
-		}
+		// Index is in the middle that is not next to each other
+		else if (current.getNext() != null && removeStart.getPrev() != null){
 
-		if (current.getNext() != null)
+			removeStart.getPrev().setNext(current.getNext());
 			current.getNext().setPrev(removeStart.getPrev());
 
-		removeStart.setPrev(null);
+			removeStart.setPrev(null);
+			current.setNext(null);
+		}
 
 		return removeStart;
 	}
@@ -301,7 +371,7 @@ public class DoubleLinkedList<E>  {
 		return false;
 	}
 
-	private int size(){
+	public int size(){
 
 		cursor = top;
 		int total = 0;
@@ -315,16 +385,15 @@ public class DoubleLinkedList<E>  {
 		return total;
 	}
 
-	private NodeD findNodeD(int index,DoubleLinkedList list){
 
+	private NodeD findNodeD(int index,DoubleLinkedList list){
 		NodeD data = list.top;
 
 		for (int i = 0; i < index; i++){
-
 			data = data.getNext();
 		}
 
 		return data;
-	}
 
+	}
 }
