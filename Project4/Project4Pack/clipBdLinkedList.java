@@ -9,13 +9,13 @@ public class clipBdLinkedList {
     }
 
     // create methods you need.
-    public void addFirst(NodeD<Character> data){
+    public void addFirst(NodeD<Character> data, int num){
 
 
         // Nothing is in the list yet
         if (isEmpty()){
 
-            top = new NodeCB(1, data,
+            top = new NodeCB(num, data,
                     null);
             tail = top;
         }
@@ -24,62 +24,29 @@ public class clipBdLinkedList {
 
             NodeCB current = top;
 
-            top = new NodeCB(1, data,
+            top = new NodeCB(num, data,
                     current);
-
-            resetClipboardNum();
-            setTail();
+            tail = top;
         }
     }
 
-    public void addLast(NodeD<Character> data){
+    public void addLast(NodeD<Character> data, int num){
 
         // Nothing is in the list yet
         if (isEmpty()){
 
-            addFirst(data);
+            addFirst(data, num);
         }
 
         else{
 
-            NodeCB prevTail = tail;
-            NodeCB newNode = new NodeCB(prevTail.
-                    getClipBoardNumber() + 1, data,null);
+            NodeCB newNode = new NodeCB(num, data,null);
 
+            tail.setNext(newNode);
             tail = newNode;
-            prevTail.setNext(tail);
         }
 
-        resetClipboardNum();
-        setTail();
-    }
-
-    public void add(NodeD<Character> data, int index){
-
-        if (isEmpty() && index == 0){
-
-            addFirst(data);
-        }
-
-        else if (index > size() || index < 1){
-
-            throw new IndexOutOfBoundsException("Index" +
-                    "out of bounds");
-        }
-
-        else {
-
-            NodeCB current = findNodeCB(index);
-            NodeCB prev = findNodeCB(index - 1);
-
-            // Set up references
-            NodeCB next = new NodeCB(99999, data,
-                    current.getNext());
-            next.setNext(current);
-            prev.setNext(next);
-        }
-
-        resetClipboardNum();
+//        setTail();
     }
 
     public NodeCB removeFirst(){
@@ -205,6 +172,26 @@ public class clipBdLinkedList {
             current = current.getNext();
             index++;
         }
+    }
+
+    public boolean indexExist(int index){
+
+        NodeCB data = top;
+
+        while (data != null){
+
+            if (data.getClipBoardNumber() == index){
+
+                return true;
+            }
+
+            else{
+
+                data = data.getNext();
+            }
+        }
+
+        return false;
     }
 
     private NodeCB findNodeCB(int index){
