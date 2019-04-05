@@ -1,4 +1,4 @@
-package Project4;
+package Project4Pack;
 
 public class DoubleLinkedList<E>  {
 	protected NodeD<E> top;      // The first NodeD<E> in the list

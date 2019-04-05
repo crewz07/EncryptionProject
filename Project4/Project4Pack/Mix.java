@@ -1,7 +1,6 @@
-package Project4;
+package Project4Pack;
 
 import java.io.*;
-import java.util.Hashtable;
 import java.util.Scanner;
 
 public class Mix {
