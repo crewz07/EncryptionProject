@@ -3,7 +3,7 @@ package Project4Pack;
 /***********************************************************************
  * This class is for the Nodes in the clipboard link list.
  *
- * @author Andrew & Wayne Chen
+ * @author Andrew Kruse & Wayne Chen
  * @version 4-1-19
  **********************************************************************/
 public class NodeCB {
