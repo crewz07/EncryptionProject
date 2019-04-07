@@ -79,6 +79,13 @@ public class DoubleLinkedList<E>  {
 			return;
 		}
 
+		// would be inserting at last slot
+		else if (index == size()){
+
+			addLast(data);
+			return;
+		}
+
 		else if (index < 0 || index > size()){
 
 			throw new IndexOutOfBoundsException("Index " +
@@ -185,6 +192,11 @@ public class DoubleLinkedList<E>  {
 //		copied.findNodeD(j-1,copied).setNext(null);
 
 		return copied;
+	}
+
+	public String getStringClip(int start, int stop){
+
+		return this.toString().substring(start, stop + 1);
 	}
 
 	public NodeD removeFirst(){
@@ -386,7 +398,7 @@ public class DoubleLinkedList<E>  {
 	}
 
 
-	private NodeD findNodeD(int index,DoubleLinkedList list){
+	private NodeD findNodeD(int index, DoubleLinkedList list){
 		NodeD data = list.top;
 
 		for (int i = 0; i < index; i++){
@@ -395,5 +407,41 @@ public class DoubleLinkedList<E>  {
 
 		return data;
 
+	}
+
+	public int delete (char data) {
+
+		int index = 0;
+		NodeD cursor = top;
+
+		if (top == null)
+			return -1;
+
+		if (cursor.getData().equals(data)) {
+			cursor = top.getNext();
+			if (cursor != null)
+				cursor.setPrev(null);
+
+			return index;
+		}
+
+		NodeD temp = top;
+		while (temp.getNext() != null) {
+
+			if (temp.getData().equals(data)) {
+				temp.getPrev().setNext(temp.getNext());
+				temp.getNext().setPrev(temp.getPrev());
+				return index;
+			}
+			index++;
+			temp = temp.getNext();
+		}
+
+		if (temp.getData().equals(data)) {
+			temp.getPrev().setNext(null);
+			return index;
+		}
+
+		return -1;
 	}
 }
