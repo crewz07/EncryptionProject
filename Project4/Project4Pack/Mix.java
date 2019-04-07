@@ -1,9 +1,16 @@
 package Project4Pack;
 
 import java.io.*;
-import java.util.Hashtable;
+import java.util.Random;
 import java.util.Scanner;
 
+/***********************************************************************
+ * This class encrypts a message based on a set of commands inputted by
+ * the user.
+ *
+ * @author Andrew Kruse & Wayne Chen
+ * @version 4-7-19
+ **********************************************************************/
 public class Mix {
 
 	/*******************************************************************
@@ -62,8 +69,6 @@ public class Mix {
 		Mix mix = new Mix();
 		mix.userMessage = args[0];
 		mix.setMessage();
-
-		System.out.println (mix.userMessage);
 		mix.mixture();
 	}
 
@@ -81,13 +86,13 @@ public class Mix {
 			String currUndoCommands = undoCommands;
 
 			try {
-				String command = scan.next("[Qbrpcxhd]");
+				String command = scan.next("[Qbrpcxhdz]");
 
 				switch (command) {
 					case "Q":
 						save(scan.next());
-						System.out.println ("Final mixed up message: \"" +
-								message+"\"");
+						System.out.println ("Final mixed up message:" +
+								" \"" + message+"\"");
 						System.exit(0);
 					case "b":
 						insertbefore(scan.next(), scan.nextInt());
@@ -96,10 +101,12 @@ public class Mix {
 						remove(scan.nextInt(), scan.nextInt());
 						break;
 					case "c":
-						copy(scan.nextInt(), scan.nextInt(), scan.nextInt());
+						copy(scan.nextInt(), scan.nextInt(),
+								scan.nextInt());
 						break;
 					case "x":
-						cut(scan.nextInt(), scan.nextInt(), scan.nextInt());
+						cut(scan.nextInt(), scan.nextInt(),
+								scan.nextInt());
 						break;
 					case "p":
 						paste(scan.nextInt(), scan.nextInt());
@@ -107,6 +114,9 @@ public class Mix {
 					case "d":
 						char input = scan.next().charAt(0);
 						deleteChar(input);
+						break;
+					case "z":
+						randomize();
 						break;
 					case "h":
 						helpPage();
@@ -117,7 +127,7 @@ public class Mix {
 				}
 				scan.nextLine();   // should flush the buffer
 				System.out.println("For demonstration purposes only:" +
-						"\n" + undoCommands);
+						"\n");
 			}
 
 			catch (Exception e ) {
@@ -247,8 +257,8 @@ public class Mix {
 	 ******************************************************************/
 	private void insertbefore(String token, int index) {
 
-		undoCommands = "r " + index + " " + (token.length() + index) +
-				"\n" + undoCommands;
+		undoCommands = "r " + index + " " + (token.length() +
+				index - 1) + "\n" + undoCommands;
 
 		for (int i = token.length() - 1; i >= 0; i--){
 			message.add(index, token.charAt(i));
@@ -316,6 +326,7 @@ public class Mix {
 
 		int index;
 		boolean deleteOnce = false;
+		int currentSize = message.size();
 
 		// The message string is empty
 		if (message.size() == 0){
@@ -324,7 +335,7 @@ public class Mix {
 		}
 
 		// Going through and deleting characters
-		for(int i = 0; i < message.size(); i++){
+		for(int i = 0; i <= currentSize; i++){
 
 			index = message.delete(data);
 
@@ -346,6 +357,116 @@ public class Mix {
 		}
 	}
 
+	/*******************************************************************
+	 * This method will randomize the message based on a random set of
+	 * commands. The commands will run up to 5 times.
+	 ******************************************************************/
+	private void randomize(){
+
+		Random rand = new Random();
+
+		// place holder for a random number
+		int randNum;
+
+		// Random number for the amount of times this method is ran
+		int randAction = rand.nextInt(5) + 1;
+
+		for (int i = 0; i < randAction; i++){
+
+			// Determining random action
+			randNum = rand.nextInt(3);
+
+			// Adding a random string
+			if (randNum == 0){
+				randomB();
+			}
+
+			// removing a random section
+			else if (randNum == 1){
+				randomRemove();
+			}
+
+			// deleting random character
+			else if (randNum == 2){
+
+				randomDelete();
+			}
+
+//			else if (randNum == 3){
+//
+//			}
+		}
+	}
+
+	/*******************************************************************
+	 * This method randomly adds a string to the character. The max is
+	 * a string of 5 random characters.
+	 ******************************************************************/
+	private void randomB(){
+
+		Random rand = new Random();
+
+		char randChar;
+		String output = "";
+
+		// Random number for the amount of characters that is inserted
+		int randAction = rand.nextInt(5) + 1;
+
+		// last character is 94
+		for (int i = 0; i < randAction; i++){
+
+			// Add to the string
+			randChar = (char)(rand.nextInt(64) + 31);
+			output = output + randChar;
+		}
+
+		insertbefore(output, rand.nextInt(message.size() + 1));
+	}
+
+	/*******************************************************************
+	 * This method will remove a random section of the a string.
+	 ******************************************************************/
+	private void randomRemove(){
+
+		Random rand = new Random();
+		int stop = 0;
+		int start;
+
+		// Make sure the size is not 0 before removing
+		if (message.size() != 0) {
+
+			start = rand.nextInt(message.size());
+
+			if (start == message.size() - 1)
+				stop = start;
+			else{
+
+				while (stop < start)
+					stop = rand.nextInt(message.size());
+			}
+
+			error(start,stop);
+			remove(start, stop);
+		}
+	}
+
+	/*******************************************************************
+	 * This method will randomly choose a character in the user message.
+	 * Then, it will delete all the characters of the randomly selected
+	 * character.
+	 ******************************************************************/
+	private void randomDelete(){
+
+		Random rand = new Random();
+
+		if (message.size() != 0) {
+			int positionChar = rand.nextInt(message.size());
+
+			// Finding character and deleting character
+			char delete = message.get(positionChar);
+			deleteChar(delete);
+		}
+	}
 	/*******************************************************************
 	 * This method determines if the an error can come from start or
 	 * stop or both.
