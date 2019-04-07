@@ -81,7 +81,7 @@ public class Mix {
 			String currUndoCommands = undoCommands;
 
 			try {
-				String command = scan.next("[Qbrpcxh]");
+				String command = scan.next("[Qbrpcxhd]");
 
 				switch (command) {
 					case "Q":
@@ -103,6 +103,10 @@ public class Mix {
 						break;
 					case "p":
 						paste(scan.nextInt(), scan.nextInt());
+						break;
+					case "d":
+						char input = scan.next().charAt(0);
+						deleteChar(input);
 						break;
 					case "h":
 						helpPage();
@@ -151,8 +155,8 @@ public class Mix {
 			message.removeIndex(start);
 		}
 
-		undoCommands = undoCommands + "b " + removeStr + " " + start +
-				"\n";
+		undoCommands = "b " + removeStr + " " + start +
+				"\n" + undoCommands;
 	}
 
 	/*******************************************************************
@@ -176,9 +180,11 @@ public class Mix {
 					"exist");
 		}
 
+		String removed = message.getStringClip(start, stop);
+
 		clipboard.addLast(message.removeClip(start, stop), clipNum);
-		undoCommands = undoCommands + "p " + start + " " +
-				clipNum + "\n";
+		undoCommands = "b " + removed + " " + (start) + "\n" +
+				undoCommands;
 	}
 
 	/*******************************************************************
@@ -230,8 +236,8 @@ public class Mix {
 
 
 		length = message.size() - length;
-		undoCommands = undoCommands + "r " + index + " " +
-				(length + index - 1) + "\n";
+		undoCommands = "r " + index + " " + (length + index - 1) +
+				"\n" + undoCommands;
 	}
 
 	/*******************************************************************
@@ -241,18 +247,15 @@ public class Mix {
 	 ******************************************************************/
 	private void insertbefore(String token, int index) {
 
-		undoCommands = undoCommands + "r " + index + " " +
-				(token.length() + index) + "\n";
+		undoCommands = "r " + index + " " + (token.length() + index) +
+				"\n" + undoCommands;
 
 		for (int i = token.length() - 1; i >= 0; i--){
 			message.add(index, token.charAt(i));
 		}
 	}
 
-	private void delete(char remove){
 
-
-	}
 
 	/*******************************************************************
 	 * This method will display what the current message is.
@@ -268,8 +271,6 @@ public class Mix {
 		for (char c : userMessage.toCharArray())
 			System.out.format("%3c",c);
 		System.out.format ("\n");
-
-		System.out.println(undoCommands);
 	}
 
 	/*******************************************************************
@@ -303,6 +304,46 @@ public class Mix {
 		System.out.println("\t  ~ is used for a space character" );
 		System.out.println("\t .... etc" );
 		System.out.println("\th\tmeans to show this help page");
+	}
+
+	/*******************************************************************
+	 * This method deletes all the characters that the user wants to
+	 * delete from the message.
+	 *
+	 * @param data The character that the user wants to delete
+	 ******************************************************************/
+	private void deleteChar(char data){
+
+		int index;
+		boolean deleteOnce = false;
+
+		// The message string is empty
+		if (message.size() == 0){
+
+			throw new IllegalArgumentException("Empty Message");
+		}
+
+		// Going through and deleting characters
+		for(int i = 0; i < message.size(); i++){
+
+			index = message.delete(data);
+
+			// Deletable character was found
+			if (index != -1 && index <= message.size()){
+
+				// Adding to the undoCommand if anything was found
+				undoCommands = "b " + data + " " + index + "\n" +
+						undoCommands;
+				deleteOnce = true;
+			}
+		}
+
+		// Throw error if nothing can be deleted
+		if (!deleteOnce){
+
+			throw new IllegalArgumentException("No character was " +
+					"found");
+		}
 	}
 
 	/*******************************************************************
