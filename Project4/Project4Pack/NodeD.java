@@ -7,7 +7,7 @@ import java.io.Serializable;
  * used in the Double link list.
  *
  * @param <E> The data type that is stored.
- * @author Andrew & Wayne
+ * @author Andrew Kruse & Wayne Chen
  * @version 3-31-19
  **********************************************************************/
 public class NodeD<E> implements Serializable {
