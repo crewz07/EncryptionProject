@@ -8,7 +8,6 @@ public class clipBdLinkedList {
         tail = top = null;
     }
 
-    // create methods you need.
     public void addFirst(NodeD<Character> data, int num){
 
 
@@ -45,8 +44,6 @@ public class clipBdLinkedList {
             tail.setNext(newNode);
             tail = newNode;
         }
-
-//        setTail();
     }
 
     public NodeCB removeFirst(){
@@ -61,67 +58,61 @@ public class clipBdLinkedList {
         NodeCB remove;
 
         remove = top;
-        top = top.getNext();
 
-        resetClipboardNum();
+        if (top.getNext() != null)
+            top = top.getNext();
+
+        else
+            top = null;
+
         return remove;
     }
 
-    public NodeCB removeLast(){
-
-        // error if empty
-        if (isEmpty()){
-
-            throw new IndexOutOfBoundsException("" +
-                    "Empty list");
-        }
-
-        NodeCB remove = tail;
-        int lastNum = tail.getClipBoardNumber();
-
-        NodeCB prev = findNodeCB(lastNum - 1);
-        prev.setNext(null);
-        tail = prev;
-
-        resetClipboardNum();
-        return remove;
-    }
-
-    public NodeCB removeIndex(int index){
+    public NodeCB removeIndex(int clipNum){
 
         NodeCB remove;
 
+        // Error Check
         if (isEmpty()){
 
             throw new IndexOutOfBoundsException("Empty" +
                     "List");
         }
 
-        if (index > size() || index < 0){
+        NodeCB prev = top;
 
-            throw new IndexOutOfBoundsException("Index" +
-                    "out of bounds");
-        }
-
-        if (index == 0){
-
-            remove = removeFirst();
-        }
-
-        else if (index == size() - 1){
-
-            remove = removeLast();
+        // element is at top
+        if (prev.getClipBoardNumber() == clipNum){
+            return removeFirst();
         }
 
         else {
-            NodeCB prev = findNodeCB(index - 1);
-            remove = findNodeCB(index);
 
-            prev.setNext(remove.getNext());
+            while (prev != null) {
+
+                // Found index
+                if (prev.getNext().getClipBoardNumber() == clipNum) {
+
+                    remove = prev.getNext();
+
+                    if (remove.getNext() != null) {
+
+                        prev.setNext(remove.getNext());
+                    } else {
+
+                        prev.setNext(null);
+                    }
+
+                    return remove;
+
+                } else {
+
+                    prev = prev.getNext();
+                }
+            }
         }
 
-        resetClipboardNum();
-        return remove;
+        return null;
     }
 
 
@@ -149,31 +140,6 @@ public class clipBdLinkedList {
         return false;
     }
 
-    private void setTail(){
-
-        NodeCB current = top;
-
-        while (current != null){
-
-            current = current.getNext();
-        }
-
-        tail = current;
-    }
-
-    private void resetClipboardNum(){
-
-        NodeCB current = top;
-        int index = 0;
-
-        while (current != null){
-
-            current.setClipBoardNumber(index);
-            current = current.getNext();
-            index++;
-        }
-    }
-
     public boolean indexExist(int index){
 
         NodeCB data = top;
@@ -192,17 +158,5 @@ public class clipBdLinkedList {
         }
 
         return false;
-    }
-
-    private NodeCB findNodeCB(int index){
-
-        NodeCB data = top;
-
-        for (int i = 0; i < index; i++){
-
-            data = data.getNext();
-        }
-
-        return data;
     }
 }
