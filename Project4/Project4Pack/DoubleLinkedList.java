@@ -167,7 +167,9 @@ public class DoubleLinkedList<E>  {
 		// Last node in the clipboard
 	    NodeD last = firstNode;
 
-	    NodeD prev;
+	    NodeD prev = null;
+
+	    // Node at the index
 	    NodeD firstList = top;
 		NodeD lastList = top;
 	    int i = 0;
@@ -187,13 +189,25 @@ public class DoubleLinkedList<E>  {
         }
 
         // Finding the Node at the index
-        while(index != i){
+        if (index == size()){
 
-        	firstList = firstList.getNext();
-        	i++;
-		}
+            while (firstList.getNext() != null) {
 
-		prev = firstList.getPrev();
+                firstList = firstList.getNext();
+            }
+
+            prev = firstList.getPrev();
+        }
+
+        // Finding element that is not at end of list
+        else {
+            while (index != i) {
+
+                firstList = firstList.getNext();
+                prev = firstList.getPrev();
+                i++;
+            }
+        }
 
         // Getting to the last element in the current
 		// Double link list
@@ -211,7 +225,7 @@ public class DoubleLinkedList<E>  {
         }
 
         // Node is added to the last slot
-        else if (index == size() - 1){
+        else if (index == size()){
 
         	lastList.setNext(firstNode);
         	firstNode.setPrev(lastList);
