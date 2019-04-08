@@ -22,7 +22,14 @@ public class UnMix {
 			command = scan.next();
 			switch (command.charAt(0)) {
 
-			// put undo commands here
+			    //if
+                case 'b':
+                    insertBefore(scan.next(), scan.nextInt());
+                    break;
+                case 'r':
+                    remove(scan.nextInt(),scan.nextInt());
+                    break;
+
 			}
 		} catch (Exception e) {
 			System.out.println("Error in command!  Problem!!!! in undo commands");
@@ -43,6 +50,7 @@ public class UnMix {
 
 	public String UnMixUsingFile(String filename, String userMessage) {
 		Scanner scanner = null;
+        setMessage(userMessage);
 		try {
 			scanner = new Scanner(new File(filename));
 		} catch (FileNotFoundException e) {
@@ -55,4 +63,28 @@ public class UnMix {
 		} 
 		return userMessage;
 	}
+
+    private void insertBefore(String token, int index) {
+
+        for (int i = token.length() - 1; i >= 0; i--){
+            message.add(index, token.charAt(i));
+        }
+    }
+
+    private void remove(int start, int stop) {
+
+        for (int i = start; i <= stop; i++) {
+
+            message.removeIndex(start);
+        }
+    }
+
+    public void setMessage(String userMessage){
+
+        for (int i = 0; i < userMessage.length(); i++){
+
+            message.addLast(userMessage.charAt(i));
+        }
+    }
+
 }
