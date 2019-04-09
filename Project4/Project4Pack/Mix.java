@@ -350,7 +350,8 @@ public class Mix {
 		System.out.println("\tb means insert a string_ at index_");
 		System.out.println("\tr means remove a section of the message" +
 				" from start to stop, including stop");
-		// Add replace
+		System.out.println("\ts \"s char1 char2\" means replace all matching " +
+				"characters(char1) with user entered character(char2)");
 		System.out.println("\tz randomizes the message");
 		System.out.println("\th means to show this help page");
 		System.out.println("\t ~ is used for a space character" );
