@@ -86,11 +86,12 @@ public class Mix {
 			String currUndoCommands = undoCommands;
 
 			try {
-				String command = scan.next("[Qbrpcxhdz]");
+				String command = scan.next("[Qbrpcxshdz]");
 
 				switch (command) {
 					case "Q":
 						save(scan.next());
+
 						System.out.println ("Final mixed up message:" +
 								" \"" + message+"\"");
 						System.exit(0);
@@ -118,6 +119,33 @@ public class Mix {
 						break;
 					case "z":
 						randomize();
+						break;
+					case "s":
+						String userInput = scan.next();
+						String userInput2 = scan.next();
+
+						//if either input is larger than 1
+						if(userInput.length() != 1 ||
+								userInput2.length() != 1){
+							throw new IllegalArgumentException();
+						}
+
+						//check that input string is a letter
+						else if(((userInput.charAt(0) > 64 &&
+								userInput.charAt(0) < 91 )||
+								(userInput.charAt(0) > 96 &&
+										userInput.charAt(0) < 123 )) &&
+								((userInput2.charAt(0) > 64 &&
+										userInput2.charAt(0) < 91 )||
+										(userInput2.charAt(0) > 96 &&
+										userInput2.charAt(0) < 123 ))){
+							substitute(userInput,userInput2);
+						}
+
+						//input is not a letter
+						else{
+							throw new IllegalArgumentException();
+						}
 						break;
 					case "h":
 						helpPage();
@@ -559,5 +587,20 @@ public class Mix {
 		}
 
 		return String.valueOf(out);
+	}
+
+	/******************************************************************
+	 * This method removes a character from all instances of it in a
+	 * list and replaces it another character provided by the user.
+	 * @param subOut character that will be removed from list
+	 * @param subIn character that will be replaced in list
+	 *****************************************************************/
+	private void substitute(String subOut,String subIn){
+		for(int i  = 0; i < message.size(); i++){
+			if(message.get(i).charValue() == subOut.charAt(0)){
+				message.removeIndex(i);
+				message.add(i,subIn.charAt(0));
+			}
+		}
 	}
 }
