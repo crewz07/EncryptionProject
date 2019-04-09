@@ -597,9 +597,16 @@ public class Mix {
 	 *****************************************************************/
 	private void substitute(String subOut,String subIn){
 		for(int i  = 0; i < message.size(); i++){
+		    char removed = message.get(i);
 			if(message.get(i).charValue() == subOut.charAt(0)){
 				message.removeIndex(i);
 				message.add(i,subIn.charAt(0));
+
+                undoCommands = "b " + removed + " " +
+                        i + "\n" + undoCommands;
+                undoCommands = "r " + i + " " +
+                        i + "\n" + undoCommands;
+
 			}
 		}
 	}
