@@ -95,6 +95,7 @@ public class Mix {
 								" \"" + message+"\"");
 						System.exit(0);
 					case "b":
+						// Modify string before input
 						insertbefore(scan.next(), scan.nextInt());
 						break;
 					case "r":
@@ -165,8 +166,8 @@ public class Mix {
 			message.removeIndex(start);
 		}
 
-		undoCommands = "b " + removeStr + " " + start +
-				"\n" + undoCommands;
+		undoCommands = "b " + convertString(removeStr,false) +
+				" " + start + "\n" + undoCommands;
 	}
 
 	/*******************************************************************
@@ -193,8 +194,8 @@ public class Mix {
 		String removed = message.getStringClip(start, stop);
 
 		clipboard.addLast(message.removeClip(start, stop), clipNum);
-		undoCommands = "b " + removed + " " + (start) + "\n" +
-				undoCommands;
+		undoCommands = "b " + convertString(removed,false) +
+						" " + (start) + "\n" + undoCommands;
 	}
 
 	/*******************************************************************
@@ -257,15 +258,15 @@ public class Mix {
 	 ******************************************************************/
 	private void insertbefore(String token, int index) {
 
+		String input = convertString(token,true);
+
 		undoCommands = "r " + index + " " + (token.length() +
 				index - 1) + "\n" + undoCommands;
 
 		for (int i = token.length() - 1; i >= 0; i--){
-			message.add(index, token.charAt(i));
+			message.add(index, input.charAt(i));
 		}
 	}
-
-
 
 	/*******************************************************************
 	 * This method will display what the current message is.
@@ -311,9 +312,21 @@ public class Mix {
 		System.out.println("Commands:");
 		System.out.println("\tQ filename	means, quit! " + " save to" +
 				" filename" );
-		System.out.println("\t  ~ is used for a space character" );
-		System.out.println("\t .... etc" );
-		System.out.println("\th\tmeans to show this help page");
+		System.out.println("\tx means to cut a section out from start" +
+				" to stop and save at a clipboard number.");
+		System.out.println("\tc means to copy a section out from " +
+				"start to stop and save at a clipboard number.");
+		System.out.println("\tp means paste a string at index _ from " +
+				"clipboard number _.");
+		System.out.println("\td means delete all instances of char_.");
+		System.out.println("\tb means insert a string_ at index_");
+		System.out.println("\tr means remove a section of the message" +
+				" from start to stop, including stop");
+		// Add replace
+		System.out.println("\tz randomizes the message");
+		System.out.println("\th means to show this help page");
+		System.out.println("\t ~ is used for a space character" );
+		System.out.println("\t insert a space before each command");
 	}
 
 	/*******************************************************************
@@ -327,6 +340,15 @@ public class Mix {
 		int index;
 		boolean deleteOnce = false;
 		int currentSize = message.size();
+		char deleted;
+		if (data == '~'){
+
+			deleted = ' ';
+		}
+
+		else {
+			deleted = data;
+		}
 
 		// The message string is empty
 		if (message.size() == 0){
@@ -337,13 +359,14 @@ public class Mix {
 		// Going through and deleting characters
 		for(int i = 0; i <= currentSize; i++){
 
-			index = message.delete(data);
+			index = message.delete(deleted);
 
 			// Deletable character was found
 			if (index != -1 && index <= message.size()){
 
 				// Adding to the undoCommand if anything was found
-				undoCommands = "b " + data + " " + index + "\n" +
+				undoCommands = "b " + convertString("" + deleted,
+						false) + " " + index + "\n" +
 						undoCommands;
 				deleteOnce = true;
 			}
@@ -393,7 +416,7 @@ public class Mix {
 			}
 
 //			else if (randNum == 3){
-//
+//				randomReplace();
 //			}
 		}
 	}
@@ -467,6 +490,27 @@ public class Mix {
 			deleteChar(delete);
 		}
 	}
+
+	/*******************************************************************
+	 * This method will randomly replace a character with another
+	 * character in the message.
+	 ******************************************************************/
+	private void randomReplace(){
+
+		Random rand = new Random();
+		char replace;
+		char newChar;
+
+		// find random character to replace with
+		if (message.size() != 0) {
+			int positionChar = rand.nextInt(message.size());
+
+			// Finding character and deleting character
+			replace = message.get(positionChar);
+			newChar = (char)(rand.nextInt(64) + 31);
+			//replace(replace, newChar);
+		}
+	}
 	/*******************************************************************
 	 * This method determines if the an error can come from start or
 	 * stop or both.
@@ -490,5 +534,30 @@ public class Mix {
 			throw new IndexOutOfBoundsException("Stop index is " +
 					"incorrect");
 		}
+	}
+
+	/*******************************************************************
+	 * This method converts any spaces to ~ or from ~ to spaces.
+	 *
+	 * @param str The string the is being swapped.
+	 * @param space True if the conversion is from ~ to space.
+	 * @return A string with the appropriate character swaps.
+	 ******************************************************************/
+	private String convertString(String str, boolean space){
+
+		char[] out = str.toCharArray();
+
+		for (int i = 0; i < out.length; i++){
+
+			if (space && out[i] == '~'){
+				out[i] = ' ';
+			}
+
+			else if (!space && out[i] == ' '){
+				out[i] = '~';
+			}
+		}
+
+		return String.valueOf(out);
 	}
 }
