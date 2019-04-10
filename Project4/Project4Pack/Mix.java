@@ -86,12 +86,11 @@ public class Mix {
 			String currUndoCommands = undoCommands;
 
 			try {
-				String command = scan.next("[Qbrpcxshdz]");
+				String command = scan.next("[Qbrpcxhdzs]");
 
 				switch (command) {
 					case "Q":
 						save(scan.next());
-
 						System.out.println ("Final mixed up message:" +
 								" \"" + message+"\"");
 						System.exit(0);
@@ -123,29 +122,7 @@ public class Mix {
 					case "s":
 						String userInput = scan.next();
 						String userInput2 = scan.next();
-
-						//if either input is larger than 1
-						if(userInput.length() != 1 ||
-								userInput2.length() != 1){
-							throw new IllegalArgumentException();
-						}
-
-						//check that input string is a letter
-						else if(((userInput.charAt(0) > 64 &&
-								userInput.charAt(0) < 91 )||
-								(userInput.charAt(0) > 96 &&
-										userInput.charAt(0) < 123 )) &&
-								((userInput2.charAt(0) > 64 &&
-										userInput2.charAt(0) < 91 )||
-										(userInput2.charAt(0) > 96 &&
-										userInput2.charAt(0) < 123 ))){
-							substitute(userInput,userInput2);
-						}
-
-						//input is not a letter
-						else{
-							throw new IllegalArgumentException();
-						}
+						substitute(userInput,userInput2);
 						break;
 					case "h":
 						helpPage();
@@ -333,10 +310,15 @@ public class Mix {
 	}
 
 	/*******************************************************************
+
 	 * This method will display a help message of instructions for the
+
 	 * user.
+
 	 ******************************************************************/
+
 	private void helpPage() {
+
 		System.out.println("Commands:");
 		System.out.println("\tQ filename	means, quit! " + " save to" +
 				" filename" );
@@ -350,8 +332,9 @@ public class Mix {
 		System.out.println("\tb means insert a string_ at index_");
 		System.out.println("\tr means remove a section of the message" +
 				" from start to stop, including stop");
-		System.out.println("\ts \"s char1 char2\" means replace all matching " +
-				"characters(char1) with user entered character(char2)");
+		System.out.println("\ts \"s char1 char2\" means replace all " +
+				"matching " + "characters(char1) with user entered " +
+				"character(char2)");
 		System.out.println("\tz randomizes the message");
 		System.out.println("\th means to show this help page");
 		System.out.println("\t ~ is used for a space character" );
@@ -409,6 +392,41 @@ public class Mix {
 		}
 	}
 
+
+	/******************************************************************
+	 * This method removes a character from all instances of it in a
+	 * list and replaces it another character provided by the user.
+	 *
+	 * @param subOut character that will be removed from list
+	 * @param subIn character that will be replaced in list
+	 *****************************************************************/
+	private void substitute(String subOut,String subIn) {
+
+		// check for errors
+		charError(subOut);
+		charError(subIn);
+
+		String out = convertString(subOut,true);
+		String in = convertString(subIn, true);
+
+		for (int i = 0; i < message.size(); i++) {
+
+			char removed = message.get(i);
+
+			if (message.get(i) == out.charAt(0)) {
+
+				message.removeIndex(i);
+				message.add(i, in.charAt(0));
+
+				undoCommands = "b " + convertString(removed + "",
+						false) + " " + i + "\n" + undoCommands;
+				undoCommands = "r " + i + " " +
+						i + "\n" + undoCommands;
+
+			}
+		}
+	}
+
 	/*******************************************************************
 	 * This method will randomize the message based on a random set of
 	 * commands. The commands will run up to 5 times.
@@ -426,7 +444,7 @@ public class Mix {
 		for (int i = 0; i < randAction; i++){
 
 			// Determining random action
-			randNum = rand.nextInt(3);
+			randNum = rand.nextInt(4);
 
 			// Adding a random string
 			if (randNum == 0){
@@ -444,9 +462,9 @@ public class Mix {
 				randomDelete();
 			}
 
-//			else if (randNum == 3){
-//				randomReplace();
-//			}
+			else if (randNum == 3){
+				randomReplace();
+			}
 		}
 	}
 
@@ -537,9 +555,10 @@ public class Mix {
 			// Finding character and deleting character
 			replace = message.get(positionChar);
 			newChar = (char)(rand.nextInt(64) + 31);
-			//replace(replace, newChar);
+			substitute(replace + "",newChar + "");
 		}
 	}
+
 	/*******************************************************************
 	 * This method determines if the an error can come from start or
 	 * stop or both.
@@ -566,6 +585,30 @@ public class Mix {
 	}
 
 	/*******************************************************************
+	 * This method performs an error check on a string to see if it is
+	 * a single character and that character is valid.
+	 *
+	 * @param userInput The input that should be character.
+	 ******************************************************************/
+	private void charError(String userInput){
+
+		// Switch the ~ with String
+		String inputA = convertString(userInput,true);
+
+		//if either input is larger than 1
+		if(inputA.length() != 1){
+
+			throw new IllegalArgumentException("Not a character");
+
+		}
+
+		//check that input string is a letter
+		else if ((inputA.charAt(0) < 32 || inputA.charAt(0) > 126)){
+			throw new IllegalArgumentException("Not a character");
+		}
+	}
+
+	/*******************************************************************
 	 * This method converts any spaces to ~ or from ~ to spaces.
 	 *
 	 * @param str The string the is being swapped.
@@ -588,27 +631,5 @@ public class Mix {
 		}
 
 		return String.valueOf(out);
-	}
-
-	/******************************************************************
-	 * This method removes a character from all instances of it in a
-	 * list and replaces it another character provided by the user.
-	 * @param subOut character that will be removed from list
-	 * @param subIn character that will be replaced in list
-	 *****************************************************************/
-	private void substitute(String subOut,String subIn){
-		for(int i  = 0; i < message.size(); i++){
-		    char removed = message.get(i);
-			if(message.get(i).charValue() == subOut.charAt(0)){
-				message.removeIndex(i);
-				message.add(i,subIn.charAt(0));
-
-                undoCommands = "b " + removed + " " +
-                        i + "\n" + undoCommands;
-                undoCommands = "r " + i + " " +
-                        i + "\n" + undoCommands;
-
-			}
-		}
 	}
 }
